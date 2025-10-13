@@ -20,7 +20,7 @@ app.use(express.json());
 
 const tempDir = path.join(__dirname, "temp");
 
-// Ensure temp dir exists (async-safe)
+// Ensure temp directory exists
 (async () => {
   await fs.mkdir(tempDir, { recursive: true });
 })();
@@ -95,8 +95,7 @@ app.post("/api/upload-cv", upload.single("cv"), async (req, res) => {
     let jobs = [];
 
     if (keywords.length > 0) {
-      //const searchKeywords = keywords.join(" ") || "software+developer";
-      const searchKeywords = "software+developer";
+      const searchKeywords = keywords.join(" ");
 
       const adzunaResponse = await axios.get(
         "https://api.adzuna.com/v1/api/jobs/us/search/1",
