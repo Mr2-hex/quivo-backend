@@ -74,16 +74,16 @@ app.post("/api/upload-cv", upload.single("cv"), async (req, res) => {
     await fs.unlink(tempFilePath);
 
     // Prompting the AI and getting the result
-    const fullText = `${parsedFile.parts.experience || ""} ${
-      parsedFile.parts.skills || ""
-    }`.trim();
-    const prompt = `Extract the top 5 most relevant keywords or key phrases (e.g., job titles like "Full-Stack Developer", skills like "React.js", technologies) from this CV text. Return ONLY a comma-separated list, no extra text. Text: "${fullText}"`;
-
+    //const fullText = `${parsedFile.parts.experience || ""} ${
+    //parsedFile.parts.skills || ""
+    //}`.trim();
+    const prompt = `You are an expert career analyst. Based on the full CV provided in JSON format, identify the **most accurate and specific job title** that best summarizes the candidate’s overall experience, skills, and roles. Prioritize titles that reflect technical expertise and hands-on work (e.g., "Full-Stack Web Developer", "AI Automation Engineer", "Software Technician", "Associate Professor", "Sales Representative", "Construction Worker"). Return ONLY the job title — no extra text, no punctuation. Text: "${parsedFile}"`;
     const result = await genAi.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
     });
     const rawKeywords = result.text.trim();
+    console.log(rawKeywords);
 
     const keywords = rawKeywords
       .split(",")
@@ -96,6 +96,7 @@ app.post("/api/upload-cv", upload.single("cv"), async (req, res) => {
 
     if (keywords.length > 0) {
       const searchKeywords = keywords.join(" ");
+      console.log(searchKeywords);
 
       const adzunaResponse = await axios.get(
         "https://api.adzuna.com/v1/api/jobs/us/search/1",
