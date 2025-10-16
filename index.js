@@ -15,18 +15,7 @@ const PORT = process.env.PORT || 3001;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://quivo.vercel.app",
-      "https://quivo.pxxl.click",
-      "https://quivo-backend.pxxl.click",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(express.json());
 
 const tempDir = path.join(__dirname, "temp");
@@ -88,7 +77,31 @@ app.post("/api/upload-cv", upload.single("cv"), async (req, res) => {
     //const fullText = `${parsedFile.parts.experience || ""} ${
     //parsedFile.parts.skills || ""
     //}`.trim();
-    const prompt = `You are an expert career analyst. Based on the full CV provided in JSON format, identify the **most accurate and specific job title** that best summarizes the candidate’s overall experience, skills, and roles. Prioritize titles that reflect technical expertise and hands-on work (e.g., "Full-Stack Web Developer", "AI Automation Engineer", "Software Technician", "Associate Professor", "Sales Representative", "Construction Worker"). Return ONLY the job title — no extra text, no punctuation. Text: "${parsedFile}"`;
+    const prompt = `
+    You are a professional career-matching AI.
+    You will analyze a person's CV (in JSON format) and determine **one single, highly specific job title**
+    that best represents the candidate’s overall professional identity based on their experience, skills,
+    education, and responsibilities.
+    
+    Rules:
+    - The job title must be a real, standard title that employers commonly use in job listings.
+    - It must reflect the candidate’s main area of expertise — not multiple options.
+    - Use all available context (experience, certifications, education, and skill keywords) to decide.
+    - Be precise and natural (e.g., “Front-End Web Developer”, “Civil Engineer”, “Project Manager”).
+    - Avoid combining or listing multiple titles.
+    - Output only one job title — no commas, no punctuation, no extra text.
+    
+    Examples of correct outputs:
+    Software Engineer
+    Graphic Designer
+    Construction Project Manager
+    Registered Nurse
+    Data Analyst
+    
+    CV JSON:
+    ${JSON.stringify(parsedFile.parts)}
+    `;
+
     const result = await genAi.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
@@ -99,7 +112,7 @@ app.post("/api/upload-cv", upload.single("cv"), async (req, res) => {
     const keywords = rawKeywords
       .split(",")
       .map((keyword) => keyword.trim().replace(/\s+/g, "+"))
-      .slice(0, 5);
+      .slice(0, 6);
     console.log("Extracted Words:", keywords);
 
     // Fetch Jobs
