@@ -15,18 +15,7 @@ const PORT = process.env.PORT || 3001;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://quivo.vercel.app",
-      "https://quivo.pxxl.click",
-      "https://quivo-backend.pxxl.click",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(express.json());
 
 const tempDir = path.join(__dirname, "temp");
