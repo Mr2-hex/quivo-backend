@@ -21,7 +21,7 @@ app.use(
       "http://localhost:5173",
       "https://quivo.vercel.app",
       "https://quivo.pxxl.click",
-      "https://quivo.pxxl.xyz",
+      "https://quivo-backend.pxxl.click",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
